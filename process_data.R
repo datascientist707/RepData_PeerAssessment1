@@ -1,30 +1,21 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+install.packages("ggplot2")
+install.packages("plyr")
+install.packages("lattice")
 
-## Loading and preprocessing the data
-```{r,echo=TRUE}
+#--- Loading and preprocessing the data
 library(ggplot2)
 library(plyr)
 library(lattice)
 dataset <- read.csv("./activity.csv")
-```
+#dataset <- read.csv("RepData_PeerAssessment1/activity.csv")
 
-## What is mean total number of steps taken per day?
-```{r,echo=TRUE}
+#--- What is mean total number of steps taken per day?
 dailytotal<-tapply(dataset$steps,as.character(dataset$date),sum,rm.na=TRUE)
 hist(dailytotal,breaks = 30, main="Daily Total Number of Steps",ylab='Freq. Steps', xlab="# Steps")
-
 mean   <- mean(dailytotal, na.rm=TRUE)
 median <- median(dailytotal, na.rm=TRUE)
 
-```
-
-## What is the average daily activity pattern?
-```{r,echo=TRUE}
+#--- What is the average daily activity pattern?
 AvgDailySteps2 <- aggregate(x=list(steps=dataset$steps), 
                            by=list(interval=dataset$interval),
                             FUN=mean, na.rm=TRUE)
@@ -32,10 +23,9 @@ ggplot(data=AvgDailySteps2, aes(x=interval, y=steps)) +
   geom_line() +
   xlab("5-minute interval") +
   ylab("Avg. Steps")
-```
 
-## Imputing missing values
-```{r,echo=TRUE}
+
+#--- Imputing missing values
 # First check how many missing
 missing <- is.na(dataset$steps)
 table(missing)
@@ -59,13 +49,15 @@ table(missing)
 # 17568 
 
 ModifiedStepsDataset <- tapply(dataset2$steps, dataset2$date, FUN=sum)
-qplot(ModifiedStepsDataset, binwidth=1000, xlab="# of Steps by Day")
+qplot(ModifiedStepsDataset, binwidth=1000, xlab="total number of steps taken each day")
 mean(ModifiedStepsDataset)
 median(ModifiedStepsDataset)
 
-```
-## Are there differences in activity patterns between weekdays and weekends?
-```{r,echo=TRUE}
+
+#--- Are there differences in activity patterns between weekdays and weekends?
+
+## ------------------------------------------------------------------------
+## ------------------------------------------------------------------------
 weekday.or.weekend <- function(date) {
   day <- weekdays(date)
   if (day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
@@ -83,4 +75,5 @@ AvgDailySteps3 <- aggregate(x=list(steps=dataset2$steps),
                             FUN=mean, na.rm=TRUE)
 ggplot(AvgDailySteps3, aes(day, steps)) + geom_line() + facet_grid(day ~ .) +
   xlab("Weekday or Weekend") + ylab("Number of Steps")
-```
+
+
